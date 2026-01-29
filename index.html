@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Brain Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #81ecec, #74b9ff);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .game-box {
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      color: #2d3436;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #0984e3;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0652dd;
+    }
+
+    #result {
+      font-size: 18px;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #score {
+      font-size: 16px;
+      color: green;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .reward {
+      font-size: 22px;
+      color: darkgreen;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-box">
+    <h2>🧠 Smart Brain Game</h2>
+    <p id="category"></p>
+    <p id="question"></p>
+
+    <div id="options"></div>
+
+    <p id="result"></p>
+    <p id="score">Score: 0</p>
+
+    <button onclick="nextQuestion()">Next Question</button>
+
+    <div id="reward" class="hidden">
+      <p class="reward">🎉 Congratulations! You won the game! 🏆</p>
+      <button onclick="restartGame()">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Audio -->
+  <audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+  <audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+  <audio id="winSound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+  <script>
+    const questions = [
+      {
+        category: "⚽ Michezo",
+        question: "Ni mchezo gani hutumia mpira na mikono pekee?",
+        options: ["Football", "Basketball", "Tennis", "Golf"],
+        answer: "Basketball"
+      },
+      {
+        category: "⚽ Michezo",
+        question: "Cristiano Ronaldo anajulikana zaidi kwa mchezo gani?",
+        options: ["Basketball", "Tennis", "Football", "Boxing"],
+        answer: "Football"
+      },
+      {
+        category: "🎭 Utamaduni",
+        question: "Ngoma ya asili ya Tanzania ni ipi?",
+        options: ["Hip hop", "Bongo Flava", "Ngoma", "Jazz"],
+        answer: "Ngoma"
+      },
+      {
+        category: "🎭 Utamaduni",
+        question: "Salamu ya heshima kwa wazee ni kusema?",
+        options: ["Yo", "Mambo", "Shikamoo", "Hi"],
+        answer: "Shikamoo"
+      },
+      {
+        category: "🏘 Jamii",
+        question: "Nani anatunza wagonjwa hospitalini?",
+        options: ["Walimu", "Askari", "Madaktari", "Marubani"],
+        answer: "Madaktari"
+      },
+      {
+        category: "🏘 Jamii",
+        question: "Mtoto anatakiwa kuhudumiwa zaidi na nani?",
+        options: ["Rafiki", "Serikali", "Wazazi", "Majirani"],
+        answer: "Wazazi"
+      },
+      {
+        category: "💻 Technology",
+        question: "Kifaa gani hutumika kuwasiliana mtandaoni?",
+        options: ["Radio", "Simu", "Kalamu", "Redio ya zamani"],
+        answer: "Simu"
+      },
+      {
+        category: "💻 Technology",
+        question: "HTML hutumika kutengeneza?",
+        options: ["Magari", "Nyumba", "Website", "Radio"],
+        answer: "Website"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const resultEl = document.getElementById("result");
+    const scoreEl = document.getElementById("score");
+    const categoryEl = document.getElementById("category");
+    const rewardEl = document.getElementById("reward");
+
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+    const winSound = document.getElementById("winSound");
+
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      questionEl.textContent = q.question;
+      categoryEl.textContent = "Category: " + q.category;
+      optionsEl.innerHTML = "";
+      resultEl.textContent = "";
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(option);
+        optionsEl.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const correct = questions[currentQuestion].answer;
+      if (selected === correct) {
+        resultEl.textContent = "✅ Correct!";
+        resultEl.style.color = "green";
+        correctSound.play();
+        score++;
+        scoreEl.textContent = "Score: " + score;
+
+        if (score === 5) {
+          winSound.play();
+          rewardEl.classList.remove("hidden");
+        }
+      } else {
+        resultEl.textContent = "❌ Wrong! Correct answer: " + correct;
+        resultEl.style.color = "red";
+        wrongSound.play();
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion >= questions.length) {
+        currentQuestion = 0;
+      }
+      loadQuestion();
+    }
+
+    function restartGame() {
+      score = 0;
+      currentQuestion = 0;
+      scoreEl.textContent = "Score: 0";
+      rewardEl.classList.add("hidden");
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+
+</body>
+</html>
